@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Bảng chấm công</title>
+    <style>
+        :root {
+            --gov-green: #3399FF;
+            --gov-green-dark: #3399FF;
+            --gov-red: #3399CC;
+            --gov-gold: #f9a825;
+            --bg-page: #f4f6f7;
+            --text-main: #212121;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Arial", sans-serif;
+            margin: 0;
+            background: var(--bg-page);
+            color: var(--text-main);
+        }
+
+        .top-bar {
+            height: 6px;
+            background: var(--gov-red);
+        }
+
+        .page-wrapper {
+            max-width: 1100px;
+            margin: 24px auto 32px;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 3px 14px rgba(0,0,0,0.12);
+            overflow: hidden;
+        }
+
+        .header-gov {
+            background: linear-gradient(90deg, var(--gov-green-dark), var(--gov-green));
+            color: #ffffff;
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .gov-emblem {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            border: 2px solid var(--gov-gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle at 30% 30%, #ffffff, var(--gov-red));
+            font-weight: bold;
+            font-size: 26px;
+            color: #fff;
+            box-shadow: 0 0 0 2px rgba(0,0,0,0.2);
+        }
+
+        .gov-title-block {
+            line-height: 1.3;
+        }
+
+        .gov-title-top {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.9;
+        }
+
+        .gov-title-main {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .gov-title-sub {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        .system-bar {
+            background: #eceff1;
+            padding: 8px 24px;
+            border-bottom: 1px solid #cfd8dc;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .system-name {
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--gov-green-dark);
+            font-weight: 600;
+        }
+
+        .system-user {
+            font-size: 12px;
+            color: #546e7a;
+        }
+
+        .system-user span {
+            font-weight: 600;
+            color: var(--gov-red);
+        }
+
+        /* MENU */
+        .nav-bar {
+            background: #ffffff;
+            border-bottom: 1px solid #cfd8dc;
+            padding: 0 24px;
+        }
+
+        .nav-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-item a {
+            display: block;
+            padding: 10px 0;
+            font-size: 13px;
+            text-decoration: none;
+            color: #455a64;
+            border-bottom: 3px solid transparent;
+        }
+
+        .nav-item a:hover {
+            color: var(--gov-green-dark);
+            border-bottom-color: #b0bec5;
+        }
+
+        .nav-item a.active {
+            color: var(--gov-green-dark);
+            border-bottom-color: var(--gov-green);
+            font-weight: 600;
+        }
+
+        .content {
+            padding: 18px 24px 28px;
+        }
+
+        .section-title {
+            margin-top: 16px;
+            margin-bottom: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--gov-green-dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title::before {
+            content: "";
+            width: 4px;
+            height: 16px;
+            border-radius: 2px;
+            background: var(--gov-red);
+        }
+
+        .section-note {
+            font-size: 12px;
+            color: #757575;
+            margin-bottom: 8px;
+        }
+
+        .panel {
+            border: 1px solid #cfd8dc;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            background: #fafafa;
+        }
+
+        .panel-header {
+            background: #eceff1;
+            border-bottom: 1px solid #cfd8dc;
+            padding: 8px 12px;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: #37474f;
+        }
+
+        .panel-body {
+            padding: 12px 14px 10px;
+        }
+
+        .form-grid,
+        .filter-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px 24px;
+        }
+
+        .form-row,
+        .filter-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 260px;
+            margin-bottom: 8px;
+        }
+
+        .form-row label,
+        .filter-row label {
+            width: 110px;
+            font-size: 13px;
+            color: #37474f;
+        }
+
+        .form-row select,
+        .filter-row select,
+        .form-row input,
+        .filter-row input {
+            flex: 1;
+            padding: 5px 8px;
+            font-size: 13px;
+            border-radius: 3px;
+            border: 1px solid #b0bec5;
+            background: #ffffff;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+
+        .form-row input:focus,
+        .form-row select:focus,
+        .filter-row input:focus,
+        .filter-row select:focus {
+            outline: none;
+            border-color: var(--gov-green);
+            box-shadow: 0 0 0 1px rgba(0,105,92,0.25);
+        }
+
+        .form-actions {
+            margin-top: 8px;
+        }
+
+        .btn {
+            padding: 6px 14px;
+            border-radius: 3px;
+            border: none;
+            font-size: 13px;
+            cursor: pointer;
+            margin-right: 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: var(--gov-green);
+            color: #ffffff;
+        }
+
+        .btn-primary:hover {
+            background: var(--gov-green-dark);
+        }
+
+        .btn-reset {
+            background: #eceff1;
+            color: #37474f;
+        }
+
+        .btn-reset:hover {
+            background: #cfd8dc;
+        }
+
+        .btn-icon {
+            font-size: 14px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        thead {
+            background: var(--gov-green-dark);
+            color: #ffffff;
+        }
+
+        th, td {
+            padding: 6px 8px;
+            text-align: center;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        th {
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 0.5px;
+        }
+
+        tbody tr:nth-child(odd) {
+            background: #ffffff;
+        }
+
+        tbody tr:nth-child(even) {
+            background: #f5f5f5;
+        }
+
+        tbody tr:hover {
+            background: #e8f5e9;
+        }
+
+        td.text-left, th.text-left {
+            text-align: left;
+        }
+
+        .footer-note {
+            margin-top: 10px;
+            font-size: 11px;
+            color: #9e9e9e;
+            text-align: right;
+        }
+
+        .note-list {
+            font-size: 12px;
+            margin: 4px 0 0 16px;
+        }
+
+        .note-list li {
+            margin-bottom: 4px;
+        }
+
+        .legend-badge {
+            display: inline-block;
+            min-width: 20px;
+            padding: 2px 4px;
+            border-radius: 3px;
+            border: 1px solid #b0bec5;
+            background: #ffffff;
+            text-align: center;
+            font-weight: bold;
+            font-size: 11px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="top-bar"></div>
+
+<div class="page-wrapper">
+    <!-- HEADER CƠ QUAN -->
+    <div class="header-gov">
+        <div class="gov-emblem">VN</div>
+        <div class="gov-title-block">
+            <div class="gov-title-top">Ủy ban nhân dân phường</div>
+            <div class="gov-title-main">PHÒNG NỘI VỤ - CÔNG TY TNHH CÔNG NGHỆ ABC</div>
+            <div class="gov-title-sub">Hệ thống bảng chấm công cán bộ, nhân viên</div>
+        </div>
+    </div>
+
+    <!-- THANH HỆ THỐNG -->
+    <div class="system-bar">
+        <div class="system-name">Hệ thống quản lý nhân sự nội bộ</div>
+        <div class="system-user">Người dùng: <span>ADMIN_TEST</span></div>
+    </div>
+
+    <!-- MENU 3 TRANG -->
+    <nav class="nav-bar">
+        <ul class="nav-list">
+            <li class="nav-item">
+                <a href="nhansu.html">Quản lý nhân sự</a>
+            </li>
+            <li class="nav-item">
+                <a href="phongban.html">Quản lý phòng ban</a>
+            </li>
+            <li class="nav-item">
+                <a href="chamcong.html" class="active">Bảng chấm công</a>
+            </li>
+            <li class="nav-item">
+                <a href="hosonhanvien.html">Hồ sơ nhân viên</a>
+            </li>
+        </ul>
+    </nav>
+
+    <div class="content">
+        <!-- THÔNG TIN KỲ CÔNG -->
+        <div class="section-title">Bảng chấm công</div>
+        <div class="section-note">
+            Chọn kỳ chấm công (tháng, năm, phòng ban) để lập và theo dõi bảng chấm công chi tiết.
+        </div>
+
+        <div class="panel">
+            <div class="panel-header">Thông tin kỳ chấm công</div>
+            <div class="panel-body">
+                <div class="filter-grid">
+                    <div class="filter-row">
+                        <label for="thang">Tháng:</label>
+                        <select id="thang">
+                            <option value="1">01</option>
+                            <option value="2">02</option>
+                            <option value="3">03</option>
+                            <option value="4">04</option>
+                            <option value="5">05</option>
+                            <option value="6">06</option>
+                            <option value="7">07</option>
+                            <option value="8">08</option>
+                            <option value="9">09</option>
+                            <option value="10">10</option>
+                            <option value="11">11</option>
+                            <option value="12" selected>12</option>
+                        </select>
+                    </div>
+                    <div class="filter-row">
+                        <label for="nam">Năm:</label>
+                        <select id="nam">
+                            <option>2023</option>
+                            <option selected>2024</option>
+                            <option>2025</option>
+                        </select>
+                    </div>
+                    <div class="filter-row">
+                        <label for="pb">Phòng ban:</label>
+                        <select id="pb">
+                            <option value="">Tất cả</option>
+                            <option>HCNS</option>
+                            <option>IT</option>
+                            <option>KD</option>
+                            <option>TC</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-primary">
+                        <span class="btn-icon">🔍</span> Áp dụng
+                    </button>
+                    <button type="button" class="btn btn-reset">
+                        <span class="btn-icon">✖</span> Xóa chọn</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- CHÚ THÍCH KÝ HIỆU -->
+        <div class="panel">
+            <div class="panel-header">Quy ước ký hiệu chấm công</div>
+            <div class="panel-body">
+                <ul class="note-list">
+                    <li><span class="legend-badge">X</span> : Có mặt làm việc đủ ngày.</li>
+                    <li><span class="legend-badge">P</span> : Nghỉ phép được duyệt, có hưởng lương.</li>
+                    <li><span class="legend-badge">K</span> : Nghỉ không phép.</li>
+                    <li><span class="legend-badge">Ô</span> : Nghỉ ốm, thai sản, chế độ (theo quy định).</li>
+                    <li><span class="legend-badge">CN</span> : Chủ nhật / ngày nghỉ hằng tuần.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- BẢNG CHẤM CÔNG CHI TIẾT (MINH HỌA 10 NGÀY ĐẦU THÁNG) -->
+        <div class="panel">
+            <div class="panel-header">Bảng chấm công chi tiết (minh họa 01–10)</div>
+            <div class="panel-body">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>STT</th>
+                            <th class="text-left">Mã NV</th>
+                            <th class="text-left">Họ và tên</th>
+                            <th class="text-left">Chức danh</th>
+                            <th>01</th>
+                            <th>02</th>
+                            <th>03</th>
+                            <th>04</th>
+                            <th>05</th>
+                            <th>06</th>
+                            <th>07</th>
+                            <th>08</th>
+                            <th>09</th>
+                            <th>10</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td class="text-left">NV001</td>
+                            <td class="text-left">Nguyễn Văn A</td>
+                            <td class="text-left">Chuyên viên</td>
+                            <td>X</td>
+                            <td>X</td>
+                            <td>X</td>
+                            <td>X</td>
+                            <td>X</td>
+                            <td>CN</td>
+                            <td>CN</td>
+                            <td>X</td>
+                            <td>X</td>
+                            <td>X</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td class="text-left">NV002</td>
+                            <td class="text-left">Trần Thị B</td>
+                            <td class="text-left">Kế toán</td>
+                            <td>X</td>
+                            <td>X</td>
+                            <td>P</td>
+                            <td>X</td>
+                            <td>X</td>
+                            <td>CN</td>
+                            <td>CN</td>
+                            <td>X</td>
+                            <td>P</td>
+                            <td>X</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td class="text-left">NV003</td>
+                            <td class="text-left">Lê Văn C</td>
+                            <td class="text-left">Tổ trưởng</td>
+                            <td>X</td>
+                            <td>X</td>
+                            <td>X</td>
+                            <td>X</td>
+                            <td>K</td>
+                            <td>CN</td>
+                            <td>CN</td>
+                            <td>X</td>
+                            <td>X</td>
+                            <td>X</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TỔNG HỢP NGÀY CÔNG -->
+        <div class="panel">
+            <div class="panel-header">Tổng hợp theo nhân viên</div>
+            <div class="panel-body">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>STT</th>
+                            <th class="text-left">Mã NV</th>
+                            <th class="text-left">Họ và tên</th>
+                            <th>Ngày công thực tế</th>
+                            <th>Nghỉ phép (P)</th>
+                            <th>Nghỉ không phép (K)</th>
+                            <th>Nghỉ chế độ (Ô)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td class="text-left">NV001</td>
+                            <td class="text-left">Nguyễn Văn A</td>
+                            <td>22</td>
+                            <td>0</td>
+                            <td>0</td>
+                            <td>0</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td class="text-left">NV002</td>
+                            <td class="text-left">Trần Thị B</td>
+                            <td>21</td>
+                            <td>2</td>
+                            <td>0</td>
+                            <td>0</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td class="text-left">NV003</td>
+                            <td class="text-left">Lê Văn C</td>
+                            <td>20</td>
+                            <td>0</td>
+                            <td>1</td>
+                            <td>1</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- GHI CHÚ -->
+        <div class="panel">
+            <div class="panel-header">Ghi chú, lưu ý khi lập bảng chấm công</div>
+            <div class="panel-body">
+                <ul class="note-list">
+                    <li>Bảng chấm công là căn cứ tính lương và các chế độ liên quan, cần được rà soát kỹ trước khi ký xác nhận.</li>
+                    <li>Cán bộ phụ trách chấm công cần đối chiếu với sổ trực, giấy xin nghỉ phép, quyết định cử đi công tác,...</li>
+                    <li>Trường hợp có điều chỉnh sau khi đã chốt kỳ, cần lập biên bản hoặc quyết định điều chỉnh kèm theo.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-note">
+            Giao diện mô phỏng phục vụ mục đích học tập, không phải hệ thống chính thức.
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

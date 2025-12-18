@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Hồ sơ nhân viên</title>
+    <style>
+        :root {
+            --gov-green: #3399FF;;
+            --gov-green-dark: #3399FF;;
+            --gov-red: #3399CC;
+            --gov-gold: #f9a825;
+            --bg-page: #f4f6f7;
+            --text-main: #212121;
+
+            --employee-purple: #3399CC;
+            --employee-purple-dark: #3399CC;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Arial", sans-serif;
+            margin: 0;
+            background: var(--bg-page);
+            color: var(--text-main);
+        }
+
+        .top-bar {
+            height: 6px;
+            background: var(--gov-red);
+        }
+
+        .page-wrapper {
+            max-width: 1100px;
+            margin: 24px auto 32px;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 3px 14px rgba(0,0,0,0.12);
+            overflow: hidden;
+        }
+
+        .header-gov {
+            background: linear-gradient(90deg, var(--gov-green-dark), var(--gov-green));
+            color: #ffffff;
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .gov-emblem {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            border: 2px solid var(--gov-gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle at 30% 30%, #ffffff, var(--gov-red));
+            font-weight: bold;
+            font-size: 26px;
+            color: #fff;
+            box-shadow: 0 0 0 2px rgba(0,0,0,0.2);
+        }
+
+        .gov-title-block {
+            line-height: 1.3;
+        }
+
+        .gov-title-top {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.9;
+        }
+
+        .gov-title-main {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .gov-title-sub {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        .system-bar {
+            background: #eceff1;
+            padding: 8px 24px;
+            border-bottom: 1px solid #cfd8dc;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .system-name {
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--gov-green-dark);
+            font-weight: 600;
+        }
+
+        .system-user {
+            font-size: 12px;
+            color: #546e7a;
+        }
+
+        .system-user span {
+            font-weight: 600;
+            color: var(--gov-red);
+        }
+
+        /* MENU CHUNG CỦA HỆ THỐNG */
+        .nav-bar {
+            background: #ffffff;
+            border-bottom: 1px solid #cfd8dc;
+            padding: 0 24px;
+        }
+
+        .nav-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-item a {
+            display: block;
+            padding: 10px 0;
+            font-size: 13px;
+            text-decoration: none;
+            color: #455a64;
+            border-bottom: 3px solid transparent;
+        }
+
+        .nav-item a:hover {
+            color: var(--gov-green-dark);
+            border-bottom-color: #b0bec5;
+        }
+
+        .nav-item a.active {
+            color: var(--gov-green-dark);
+            border-bottom-color: var(--gov-green);
+            font-weight: 600;
+        }
+
+        .content {
+            padding: 16px 24px 24px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--employee-purple-dark);
+        }
+
+        .section-note {
+            font-size: 12px;
+            color: #757575;
+            margin-bottom: 12px;
+        }
+
+        /* THANH MODULE MÀU TÍM (giống ảnh) */
+        .module-header {
+            background: var(--employee-purple);
+            color: #fff;
+            padding: 10px 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .module-header-title {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .module-header-tabs {
+            display: flex;
+            gap: 8px;
+            margin-left: 30px;
+        }
+
+        .module-tab {
+            padding: 6px 14px;
+            border-radius: 20px 20px 0 0;
+            background: transparent;
+            color: #f5f5f5;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .module-tab.active {
+            background: #ffffff;
+            color: var(--employee-purple-dark);
+            box-shadow: 0 -2px 6px rgba(0,0,0,0.15);
+        }
+
+        /* LAYOUT HAI CỘT: SIDEBAR + DANH SÁCH THẺ */
+        .profile-layout {
+            display: grid;
+            grid-template-columns: 220px 1fr;
+            gap: 16px;
+            margin-top: 10px;
+        }
+
+        .profile-sidebar {
+            border-right: 1px solid #e0e0e0;
+            padding-right: 12px;
+        }
+
+        .sidebar-section-title {
+            font-size: 12px;
+            color: #9e9e9e;
+            text-transform: uppercase;
+            margin: 10px 0 4px;
+        }
+
+        .sidebar-list {
+            list-style: none;
+            padding-left: 0;
+            margin: 0 0 10px;
+            font-size: 13px;
+        }
+
+        .sidebar-list li {
+            padding: 4px 8px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .sidebar-list li:hover {
+            background: #e3f2fd;
+        }
+
+        .sidebar-list li.active {
+            background: #c5e1f5;
+            font-weight: 600;
+        }
+
+        .sidebar-list li .count {
+            float: right;
+            color: #607d8b;
+            font-size: 11px;
+        }
+
+        .sidebar-label-icon {
+            margin-right: 4px;
+        }
+
+        /* KHU VỰC DANH SÁCH THẺ NHÂN VIÊN */
+        .profile-main-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .profile-main-header-left {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .btn-create {
+            background: #43a047;
+            color: #fff;
+            border: none;
+            font-size: 13px;
+            padding: 6px 14px;
+            border-radius: 3px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-create:hover {
+            background: #2e7d32;
+        }
+
+        .btn-create-icon {
+            font-size: 15px;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+            gap: 12px;
+        }
+
+        .employee-card {
+            display: flex;
+            background: #ffffff;
+            border-radius: 4px;
+            border: 1px solid #e0e0e0;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+
+        .employee-avatar {
+            width: 90px;
+            height: 100%;
+            background: #f5f5f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .employee-avatar img {
+            width: 80px;
+            height: 80px;
+            border-radius: 3px;
+            object-fit: cover;
+        }
+
+        .employee-info {
+            flex: 1;
+            padding: 8px 10px;
+            position: relative;
+        }
+
+        .employee-name {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .employee-position {
+            font-size: 12px;
+            color: #616161;
+            margin-bottom: 4px;
+        }
+
+        .employee-tags {
+            font-size: 11px;
+            color: #757575;
+            margin-bottom: 6px;
+        }
+
+        .employee-contact {
+            font-size: 11px;
+            color: #424242;
+            line-height: 1.3;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            position: absolute;
+            top: 8px;
+            right: 8px;
+        }
+
+        .status-dot.green {
+            background: #2e7d32;
+        }
+
+        .status-dot.red {
+            background: #c62828;
+        }
+
+        .status-dot.orange {
+            background: #fb8c00;
+        }
+
+        .alert-icon {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 2px solid #c62828;
+            color: #c62828;
+            font-size: 11px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            bottom: 6px;
+            right: 6px;
+            background: #fff;
+        }
+
+        .card-footer-label {
+            margin-top: 4px;
+            font-size: 11px;
+            color: #9e9e9e;
+        }
+
+        .card-footer-label span.dot {
+            display: inline-block;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            margin-right: 4px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="top-bar"></div>
+
+<div class="page-wrapper">
+
+    <!-- HEADER CHUNG -->
+    <div class="header-gov">
+        <div class="gov-emblem">ABC</div>
+        <div class="gov-title-block">
+            <div class="gov-title-top">Ủy ban nhân dân phường</div>
+            <div class="gov-title-main">PHÒNG NỘI VỤ - CÔNG TY TNHH CÔNG NGHỆ ABC</div>
+            <div class="gov-title-sub">Hệ thống quản lý, theo dõi hồ sơ cán bộ, nhân viên</div>
+        </div>
+    </div>
+
+    <!-- THANH THÔNG TIN HỆ THỐNG -->
+    <div class="system-bar">
+        <div class="system-name">Hệ thống quản lý nhân sự nội bộ</div>
+        <div class="system-user">Người dùng: <span>ADMIN_TEST</span></div>
+    </div>
+
+    <!-- MENU 4 TRANG -->
+    <nav class="nav-bar">
+        <ul class="nav-list">
+            <li class="nav-item">
+                <a href="nhansu.html">Quản lý nhân sự</a>
+            </li>
+            <li class="nav-item">
+                <a href="phongban.html">Quản lý phòng ban</a>
+            </li>
+            <li class="nav-item">
+                <a href="chamcong.html">Bảng chấm công</a>
+            </li>
+            <li class="nav-item">
+                <a href="hosonhanvien.html" class="active">Hồ sơ nhân viên</a>
+            </li>
+        </ul>
+    </nav>
+
+    
+    <div class="module-header">
+        <div class="module-header-title">Nhân viên</div>
+        <div class="module-header-tabs">
+            <button class="module-tab active">Nhân viên</button>
+            <button class="module-tab">Hợp đồng</button>
+        </div>
+    </div>
+
+    <!-- NỘI DUNG TRANG HỒ SƠ NHÂN VIÊN -->
+    <div class="content">
+        <div class="section-title">Danh sách hồ sơ nhân viên</div>
+        <div class="section-note">
+            Giao diện minh họa dạng "thẻ" hiển thị thông tin cơ bản: ảnh, họ tên, chức danh, email, số điện thoại và trạng thái.
+        </div>
+
+        <div class="profile-layout">
+            <!-- SIDEBAR BÊN TRÁI -->
+            <aside class="profile-sidebar">
+                <div class="sidebar-section-title">Công ty</div>
+                <ul class="sidebar-list">
+                    <li class="active">All <span class="count">6</span></li>
+                    <li>Branch Company (Hà Nội)</li>
+                    <li>Branch Company (Hồ Chí Minh)</li>
+                </ul>
+
+                <div class="sidebar-section-title">Phòng/Ban</div>
+                <ul class="sidebar-list">
+                    <li class="active"><span class="sidebar-label-icon">👥</span> All</li>
+                    <li>Phòng Hành chính- Nhân sự</li>
+                    <li>Phòng Công nghệ thông tin</li>
+                    <li>Phòng Kinh doanh</li>
+                    <li>Phòng Tài chính - Kế toán</li>
+                </ul>
+            </aside>
+
+            <!-- KHU VỰC DANH SÁCH THẺ -->
+            <main>
+                <div class="profile-main-header">
+                    <div class="profile-main-header-left">
+                        Nhân viên
+                    </div>
+                    <button class="btn-create">
+                        <span class="btn-create-icon">＋</span> Tạo
+                    </button>
+                </div>
+
+                <div class="card-grid">
+                    <!-- CARD 1 -->
+                    <div class="employee-card">
+                        <div class="employee-avatar">
+                            <!-- Đổi src thành ảnh thật trên máy bạn -->
+                            <img src="https://banobagi.vn/wp-content/uploads/2025/04/avatar-nam-4-1.jpg" alt="Abigail Peterson">
+                        </div>
+                        <div class="employee-info">
+                            <div class="status-dot.red status-dot"></div>
+                            <div class="employee-name">Nguyễn Văn A</div>
+                            <div class="employee-position">Chuyên viên</div>
+                            <div class="employee-tags">IT</div>
+                            <div class="employee-contact">
+                                abigail.peterson39@example.com<br>
+                                (482)-233-3393
+                            </div>
+                            <div class="alert-icon">!</div>
+                        </div>
+                    </div>
+
+                    <!-- CARD 2 -->
+                    <div class="employee-card">
+                        <div class="employee-avatar">
+                            <img src="https://i.pinimg.com/736x/d5/4f/9c/d54f9c98d56c777db91424c1bf8e62a4.jpg" alt="Anita Oliver">
+                        </div>
+                        <div class="employee-info">
+                            <div class="status-dot.green status-dot"></div>
+                            <div class="employee-name">Trần Thị B</div>
+                            <div class="employee-position">Kế Toán</div>
+                            <div class="employee-tags">Phòng Tài chính - Kế Toán</div>
+                            <div class="employee-contact">
+                                anita.oliver32@example.com<br>
+                                (538)-497-4804
+                            </div>
+                            <div class="card-footer-label">
+                                <span class="dot" style="background:#4caf50"></span>
+                                Đang làm việc
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CARD 3 -->
+                    <div class="employee-card">
+                        <div class="employee-avatar">
+                            <img src="https://jbagy.me/wp-content/uploads/2025/03/Hinh-anh-avatar-nam-cute-4-1.jpg" alt="Eli Lambert">
+                        </div>
+                        <div class="employee-info">
+                            <div class="status-dot.red status-dot"></div>
+                            <div class="employee-name">Lê Văn C</div>
+                            <div class="employee-position">Tổ trưởng chuyên môn</div>
+                            <div class="employee-tags">Phòng Công nghệ thông tin</div>
+                            <div class="employee-contact">
+                                eli.lambert22@example.com<br>
+                                (644)-169-1352
+                            </div>
+                            <div class="alert-icon">!</div>
+                        </div>
+                    </div>
+
+                    <!-- CARD 4 -->
+                    <div class="employee-card">
+                        <div class="employee-avatar">
+                            <img src="https://jbagy.me/wp-content/uploads/2025/03/Hinh-anh-avatar-cute-chibi-nu-ngo-nghinh-1.jpg" alt="Ernest Reed">
+                        </div>
+                        <div class="employee-info">
+                            <div class="status-dot.red status-dot"></div>
+                            <div class="employee-name">Lại Đức D</div>
+                            <div class="employee-position">Nhân viên hợp đồng</div>
+                            <div class="employee-tags">__</div>
+                            <div class="employee-contact">
+                                ernest.reed47@example.com<br>
+                                (944)-518-8232
+                            </div>
+                            <div class="alert-icon">!</div>
+                        </div>
+                    </div>
+
+                    <!-- CARD 5 -->
+                    <div class="employee-card">
+                        <div class="employee-avatar">
+                            <img src="https://jbagy.me/wp-content/uploads/2025/03/Hinh-anh-avatar-cute-chibi-nu-ngo-nghinh-1.jpg" alt="Marc Demo">
+                        </div>
+                        <div class="employee-info">
+                            <div class="status-dot.red status-dot"></div>
+                            <div class="employee-name">Phùng Hồng E</div>
+                            <div class="employee-position">Chuyên viên</div>
+                            <div class="employee-tags">Phòng Công nghệ thông tin</div>
+                            <div class="employee-contact">
+                                mark.brown23@example.com<br>
+                                +32 818 137 00
+                            </div>
+                            <div class="alert-icon">!</div>
+                        </div>
+                    </div>
+
+                    <!-- CARD 6 -->
+                    <div class="employee-card">
+                        <div class="employee-avatar">
+                            <img src="https://cdn2.fptshop.com.vn/unsafe/1920x0/filters:format(webp):quality(75)/small/avatar_hoat_hinh_db4e0e9cf4.jpg" alt="Mitchell Admin">
+                        </div>
+                        <div class="employee-info">
+                            <div class="status-dot.green status-dot"></div>
+                            <div class="employee-name">Cấn Thảo G</div>
+                            <div class="employee-position">Chuyên viên</div>
+                            <div class="employee-tags">Trainer • Employee</div>
+                            <div class="employee-contact">
+                                aiden.hughes71@example.com<br>
+                                (237)-125-2389
+                            </div>
+                            <div class="card-footer-label">
+                                <span class="dot" style="background:#4caf50"></span>
+                                Đang làm việc
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </main>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
