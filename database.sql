@@ -47,7 +47,7 @@ CREATE TABLE employees (
         REFERENCES departments(id)
 );
 
--- DỮ LIỆU NHÂN VIÊN MẪU
+-- DỮ LIỆU NHÂN VIÊN
 INSERT INTO employees (code, fullname, department_id, position, dob, gender, salary_coeff, base_salary) VALUES
 ('NV001', 'Nguyễn Văn A',  1, 'Chuyên viên nhân sự',      '1995-01-01', 'Nam', 3.20, 8000000),
 ('NV002', 'Trần Thị B',    2, 'Lập trình viên',           '1996-03-15', 'Nữ',  3.50, 10000000),
