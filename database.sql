@@ -22,7 +22,7 @@ CREATE TABLE departments (
     note        VARCHAR(255)
 );
 
--- DỮ LIỆU PHÒNG BAN MẪU
+-- DỮ LIỆU PHÒNG BAN
 INSERT INTO departments (code, name, note) VALUES
 ('HCNS', 'Hành chính - Nhân sự', 'Quản lý hồ sơ, lương, BHXH...'),
 ('IT',   'Công nghệ thông tin',  'Phát triển & vận hành hệ thống'),
