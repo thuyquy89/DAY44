@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý làm thêm giờ (OT)</title>
+    <style>
+        :root {
+            --gov-green: #3399FF;
+            --gov-green-dark: #3399FF;
+            --gov-red: #3399CC;
+            --gov-gold: #f9a825;
+            --bg-page: #f4f6f7;
+            --text-main: #212121;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: "Arial", sans-serif;
+            margin: 0;
+            background: var(--bg-page);
+            color: var(--text-main);
+        }
+
+        .top-bar {
+            height: 6px;
+            background: var(--gov-red);
+        }
+
+        .page-wrapper {
+            max-width: 1100px;
+            margin: 24px auto 32px;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 3px 14px rgba(0,0,0,0.12);
+            overflow: hidden;
+        }
+
+        .header-gov {
+            background: linear-gradient(90deg, var(--gov-green-dark), var(--gov-green));
+            color: #ffffff;
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .gov-emblem {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            border: 2px solid var(--gov-gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle at 30% 30%, #ffffff, var(--gov-red));
+            font-weight: bold;
+            font-size: 26px;
+            color: #fff;
+            box-shadow: 0 0 0 2px rgba(0,0,0,0.2);
+        }
+
+        .gov-title-block { line-height: 1.3; }
+
+        .gov-title-top {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.9;
+        }
+
+        .gov-title-main {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .gov-title-sub {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        .system-bar {
+            background: #eceff1;
+            padding: 8px 24px;
+            border-bottom: 1px solid #cfd8dc;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .system-name {
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--gov-green-dark);
+            font-weight: 600;
+        }
+
+        .system-user {
+            font-size: 12px;
+            color: #546e7a;
+        }
+
+        .system-user span {
+            font-weight: 600;
+            color: var(--gov-red);
+        }
+
+        /* MENU */
+        .nav-bar {
+            background: #ffffff;
+            border-bottom: 1px solid #cfd8dc;
+            padding: 0 24px;
+        }
+
+        .nav-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-item a {
+            display: block;
+            padding: 10px 0;
+            font-size: 13px;
+            text-decoration: none;
+            color: #455a64;
+            border-bottom: 3px solid transparent;
+        }
+
+        .nav-item a:hover {
+            color: var(--gov-green-dark);
+            border-bottom-color: #b0bec5;
+        }
+
+        .nav-item a.active {
+            color: var(--gov-green-dark);
+            border-bottom-color: var(--gov-green);
+            font-weight: 600;
+        }
+
+        .content {
+            padding: 18px 24px 28px;
+        }
+
+        .section-title {
+            margin-top: 4px;
+            margin-bottom: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--gov-green-dark);
+        }
+
+        .section-note {
+            font-size: 12px;
+            color: #757575;
+            margin-bottom: 12px;
+        }
+
+        .panel {
+            border: 1px solid #cfd8dc;
+            border-radius: 6px;
+            margin-bottom: 18px;
+            background: #fafafa;
+        }
+
+        .panel-header {
+            background: #eceff1;
+            border-bottom: 1px solid #cfd8dc;
+            padding: 8px 12px;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: #37474f;
+        }
+
+        .panel-body {
+            padding: 10px 14px 10px;
+        }
+
+        .form-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px 24px;
+        }
+
+        .form-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 260px;
+            margin-bottom: 6px;
+        }
+
+        .form-row label {
+            width: 140px;
+            font-size: 13px;
+            color: #37474f;
+        }
+
+        .form-row input,
+        .form-row select {
+            flex: 1;
+            padding: 5px 8px;
+            font-size: 13px;
+            border-radius: 3px;
+            border: 1px solid #b0bec5;
+            background: #ffffff;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+
+        .form-row input:focus,
+        .form-row select:focus {
+            outline: none;
+            border-color: var(--gov-green);
+            box-shadow: 0 0 0 1px rgba(0,105,92,0.25);
+        }
+
+        .form-actions {
+            margin-top: 8px;
+        }
+
+        .btn {
+            padding: 6px 14px;
+            border-radius: 3px;
+            border: none;
+            font-size: 13px;
+            cursor: pointer;
+            margin-right: 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: var(--gov-green);
+            color: #ffffff;
+        }
+
+        .btn-primary:hover {
+            background: var(--gov-green-dark);
+        }
+
+        .btn-reset {
+            background: #eceff1;
+            color: #37474f;
+        }
+
+        .btn-reset:hover {
+            background: #cfd8dc;
+        }
+
+        .btn-danger {
+            background: #e53935;
+            color: #ffffff;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        thead {
+            background: var(--gov-green-dark);
+            color: #ffffff;
+        }
+
+        th, td {
+            padding: 6px 8px;
+            text-align: center;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        th {
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 0.5px;
+        }
+
+        tbody tr:nth-child(odd) { background: #ffffff; }
+        tbody tr:nth-child(even) { background: #f5f5f5; }
+
+        tbody tr:hover { background: #e8f5e9; }
+
+        td.text-left,
+        th.text-left { text-align: left; }
+
+        .footer-note {
+            margin-top: 10px;
+            font-size: 11px;
+            color: #9e9e9e;
+            text-align: right;
+        }
+
+        .pill {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+            background: #fff8e1;
+            border: 1px solid #ffe082;
+            color: #ef6c00;
+        }
+
+        .text-right { text-align: right; }
+
+        .formula-box {
+            font-size: 12px;
+            background: #fffde7;
+            border-radius: 4px;
+            border: 1px dashed #ffe082;
+            padding: 8px 10px;
+            line-height: 1.4;
+        }
+
+        .formula-box code {
+            background: #fff9c4;
+            padding: 1px 4px;
+            border-radius: 3px;
+            font-size: 11px;
+        }
+
+        .config-note {
+            font-size: 11px;
+            color: #757575;
+            margin-top: 4px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="top-bar"></div>
+
+<div class="page-wrapper">
+    <!-- HEADER -->
+    <div class="header-gov">
+        <div class="gov-emblem">ABC</div>
+        <div class="gov-title-block">
+            <div class="gov-title-top">Ủy ban nhân dân phường</div>
+            <div class="gov-title-main">PHÒNG NỘI VỤ - CÔNG TY TNHH CÔNG NGHỆ ABC</div>
+            <div class="gov-title-sub">Quản lý thời gian làm thêm giờ (OT) để tính lương</div>
+        </div>
+    </div>
+
+    <!-- SYSTEM BAR -->
+    <div class="system-bar">
+        <div class="system-name">Hệ thống quản lý nhân sự nội bộ</div>
+        <div class="system-user">Người dùng: <span>ADMIN_TEST</span></div>
+    </div>
+
+    <!-- MENU -->
+    <nav class="nav-bar">
+        <ul class="nav-list">
+            <li class="nav-item">
+                <a href="nhansu.html">Quản lý nhân sự</a>
+            </li>
+            <li class="nav-item">
+                <a href="phongban.html">Quản lý phòng ban</a>
+            </li>
+            <li class="nav-item">
+                <a href="chamcong.html">Bảng chấm công</a>
+            </li>
+            <li class="nav-item">
+                <a href="hosonhanvien.html">Hồ sơ nhân viên</a>
+            </li>
+            <li class="nav-item">
+                <a href="ot.html" class="active">Làm thêm giờ (OT)</a>
+            </li>
+            <li class="nav-item">
+                <a href="admin_it.html">Quản trị hệ thống</a>
+            </li>
+        </ul>
+    </nav>
+
+    <div class="content">
+        <div class="section-title">Quản lý làm thêm giờ (OT)</div>
+        <div class="section-note">
+            Ghi nhận giờ làm thêm của nhân viên theo tháng/phòng ban và tính ra tiền OT, lương gộp, lương thực nhận (mô phỏng).
+        </div>
+
+        <!-- CÔNG THỨC -->
+        <div class="panel">
+            <div class="panel-header">Công thức tính lương có OT (demo)</div>
+            <div class="panel-body">
+                <div class="formula-box">
+                    Lương giờ:
+                    <code>Lương giờ = Lương cơ bản / Số ngày công chuẩn / Số giờ làm trong ngày</code><br>
+                    Tiền OT từng dòng:
+                    <code>Tiền OT = Giờ OT × Lương giờ × Hệ số OT</code><br>
+                    Tổng OT theo nhân viên:
+                    <code>Tổng tiền OT = Σ Tiền OT của các ngày trong tháng</code><br>
+                    Lương gộp:
+                    <code>Lương gộp = Lương cơ bản + Tổng tiền OT</code><br>
+                    Khấu trừ bảo hiểm (demo):
+                    <code>BH = Tỷ lệ BH (%) × Lương gộp</code><br>
+                    Lương thực nhận:
+                    <code>Lương thực nhận ≈ Lương gộp − BH</code><br>
+                    (Các tham số ở dưới có thể điều chỉnh để phù hợp cách tính của đơn vị bạn.)
+                </div>
+            </div>
+        </div>
+
+        <!-- THIẾT LẬP THAM SỐ -->
+        <div class="panel">
+            <div class="panel-header">Thiết lập tham số tính lương OT</div>
+            <div class="panel-body">
+                <div class="form-grid">
+                    <div class="form-row">
+                        <label for="configDays">Số ngày công / tháng:</label>
+                        <input id="configDays" type="number" min="1" value="22">
+                    </div>
+                    <div class="form-row">
+                        <label for="configHours">Số giờ làm / ngày:</label>
+                        <input id="configHours" type="number" min="1" value="8">
+                    </div>
+                    <div class="form-row">
+                        <label for="configBH">Tỷ lệ BH (%):</label>
+                        <input id="configBH" type="number" min="0" max="100" step="0.1" value="10.5">
+                    </div>
+                </div>
+                <div class="config-note">
+                    Khi thay đổi tham số, bảng OT và bảng tổng hợp sẽ tự tính lại theo giá trị mới.
+                </div>
+            </div>
+        </div>
+
+        <!-- THÔNG TIN KỲ OT -->
+        <div class="panel">
+            <div class="panel-header">Thông tin kỳ OT</div>
+            <div class="panel-body">
+                <div class="form-grid">
+                    <div class="form-row">
+                        <label for="thang">Tháng:</label>
+                        <select id="thang">
+                            <option value="1">01</option>
+                            <option value="2">02</option>
+                            <option value="3">03</option>
+                            <option value="4">04</option>
+                            <option value="5">05</option>
+                            <option value="6">06</option>
+                            <option value="7">07</option>
+                            <option value="8">08</option>
+                            <option value="9">09</option>
+                            <option value="10">10</option>
+                            <option value="11">11</option>
+                            <option value="12" selected>12</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <label for="nam">Năm:</label>
+                        <select id="nam">
+                            <option>2024</option>
+                            <option selected>2025</option>
+                            <option>2026</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <label for="pb">Phòng ban:</label>
+                        <select id="pb">
+                            <option value="">Tất cả</option>
+                            <option>HCNS</option>
+                            <option>IT</option>
+                            <option>KD</option>
+                            <option>TC</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-primary" type="button">
+                        Áp dụng
+                    </button>
+                    <button class="btn btn-reset" type="button">
+                        Xóa chọn
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- NHẬP OT -->
+        <div class="panel">
+            <div class="panel-header">Nhập thông tin OT</div>
+            <div class="panel-body">
+                <div class="form-grid">
+                    <div class="form-row">
+                        <label for="employee">Nhân viên:</label>
+                        <select id="employee">
+                            <option value="">-- Chọn nhân viên --</option>
+                            <option value="NV001">NV001 - Nguyễn Văn A</option>
+                            <option value="NV002">NV002 - Trần Thị B</option>
+                            <option value="NV003">NV003 - Lê Văn C</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <label for="baseSalary">Lương cơ bản (/tháng):</label>
+                        <input id="baseSalary" type="text" readonly placeholder="Tự điền theo nhân viên">
+                    </div>
+                    <div class="form-row">
+                        <label for="ngayOt">Ngày OT:</label>
+                        <input id="ngayOt" type="date">
+                    </div>
+                    <div class="form-row">
+                        <label for="gioOt">Số giờ OT:</label>
+                        <input id="gioOt" type="number" min="0" step="0.5" value="2">
+                    </div>
+                    <div class="form-row">
+                        <label for="loaiOt">Loại OT:</label>
+                        <select id="loaiOt">
+                            <option value="1.5">Ngày thường (150%)</option>
+                            <option value="2">Cuối tuần (200%)</option>
+                            <option value="3">Lễ/Tết (300%)</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <label for="ghichu">Ghi chú:</label>
+                        <input id="ghichu" type="text" placeholder="VD: Họp dự án, trực hệ thống...">
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-primary" type="button" onclick="addOtRow()">
+                        Thêm OT
+                    </button>
+                    <button class="btn btn-reset" type="button" onclick="resetOtForm()">
+                        Làm lại
+                    </button>
+                </div>
+                <div style="font-size: 11px; color:#9e9e9e; margin-top:6px;">
+                    Giao diện mô phỏng phục vụ mục đích học tập, không phải hệ thống chính thức.
+                </div>
+            </div>
+        </div>
+
+        <!-- BẢNG CHI TIẾT OT -->
+        <div class="panel">
+            <div class="panel-header">Danh sách OT chi tiết</div>
+            <div class="panel-body">
+                <table id="otTable">
+                    <thead>
+                        <tr>
+                            <th>STT</th>
+                            <th class="text-left">Mã NV</th>
+                            <th class="text-left">Họ và tên</th>
+                            <th>Ngày OT</th>
+                            <th>Giờ OT</th>
+                            <th>Loại OT</th>
+                            <th>Lương giờ</th>
+                            <th>Tiền OT</th>
+                            <th class="text-left">Ghi chú</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- JS render -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- BẢNG TỔNG HỢP -->
+        <div class="panel">
+            <div class="panel-header">Tổng hợp OT & lương theo nhân viên (tháng hiện tại)</div>
+            <div class="panel-body">
+                <table id="summaryTable">
+                    <thead>
+                        <tr>
+                            <th>STT</th>
+                            <th class="text-left">Mã NV</th>
+                            <th class="text-left">Họ và tên</th>
+                            <th class="text-right">Lương cơ bản</th>
+                            <th class="text-right">Tổng giờ OT</th>
+                            <th class="text-right">Tổng tiền OT</th>
+                            <th class="text-right">Lương gộp</th>
+                            <th class="text-right">BH (%)</th>
+                            <th class="text-right">Lương thực nhận</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- JS render -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="footer-note">
+            Giao diện mô phỏng phục vụ mục đích học tập, không phải hệ thống chính thức
+        </div>
+    </div>
+</div>
+
+<script>
+    // ===== DỮ LIỆU DEMO =====
+    const employees = {
+        "NV001": { code: "NV001", name: "Nguyễn Văn A", baseSalary: 8000000 },
+        "NV002": { code: "NV002", name: "Trần Thị B", baseSalary: 10000000 },
+        "NV003": { code: "NV003", name: "Lê Văn C", baseSalary: 12000000 }
+    };
+
+    // Tham số cấu hình (có thể chỉnh qua UI)
+    const config = {
+        workingDays: 22,
+        workingHoursPerDay: 8,
+        deductionRate: 0.105 // 10.5%
+    };
+
+    const otRows = []; // chỉ lưu dữ liệu gốc, mọi tính toán làm lúc render
+
+    const employeeSelect = document.getElementById("employee");
+    const baseSalaryInput = document.getElementById("baseSalary");
+    const otTableBody = document.querySelector("#otTable tbody");
+    const summaryTableBody = document.querySelector("#summaryTable tbody");
+
+    // Inputs config
+    const daysInput = document.getElementById("configDays");
+    const hoursInput = document.getElementById("configHours");
+    const bhInput = document.getElementById("configBH");
+
+    employeeSelect.addEventListener("change", () => {
+        const code = employeeSelect.value;
+        if (code && employees[code]) {
+            baseSalaryInput.value = formatCurrency(employees[code].baseSalary);
+        } else {
+            baseSalaryInput.value = "";
+        }
+    });
+
+    // Cập nhật config khi đổi tham số
+    daysInput.addEventListener("input", updateConfigFromUI);
+    hoursInput.addEventListener("input", updateConfigFromUI);
+    bhInput.addEventListener("input", updateConfigFromUI);
+
+    function updateConfigFromUI() {
+        const daysVal = parseInt(daysInput.value, 10);
+        const hoursVal = parseInt(hoursInput.value, 10);
+        const bhVal = parseFloat(bhInput.value.replace(",", "."));
+
+        config.workingDays = (!isNaN(daysVal) && daysVal > 0) ? daysVal : 22;
+        config.workingHoursPerDay = (!isNaN(hoursVal) && hoursVal > 0) ? hoursVal : 8;
+        config.deductionRate = (!isNaN(bhVal) && bhVal >= 0) ? (bhVal / 100) : 0.105;
+
+        renderOtTable();
+        renderSummaryTable();
+    }
+
+    function formatCurrency(amount) {
+        return amount.toLocaleString("vi-VN") + " đ";
+    }
+
+    function getHourlyRate(emp) {
+        if (!emp) return 0;
+        if (config.workingDays <= 0 || config.workingHoursPerDay <= 0) return 0;
+        return emp.baseSalary / config.workingDays / config.workingHoursPerDay;
+    }
+
+    function addOtRow() {
+        const code = employeeSelect.value;
+        if (!code || !employees[code]) {
+            alert("Vui lòng chọn nhân viên.");
+            return;
+        }
+
+        const emp = employees[code];
+        const ngayOt = document.getElementById("ngayOt").value;
+        const gioOt = parseFloat(document.getElementById("gioOt").value || "0");
+        const factor = parseFloat(document.getElementById("loaiOt").value);
+        const ghichu = document.getElementById("ghichu").value.trim();
+
+        if (!ngayOt) {
+            alert("Vui lòng chọn ngày OT.");
+            return;
+        }
+        if (gioOt <= 0) {
+            alert("Số giờ OT phải lớn hơn 0.");
+            return;
+        }
+
+        const row = {
+            code: emp.code,
+            name: emp.name,
+            date: ngayOt,
+            hours: gioOt,
+            factor: factor,
+            note: ghichu
+        };
+
+        otRows.push(row);
+        renderOtTable();
+        renderSummaryTable();
+        resetOtForm(false);
+    }
+
+    function resetOtForm(resetEmployee = true) {
+        if (resetEmployee) {
+            employeeSelect.value = "";
+            baseSalaryInput.value = "";
+        }
+        document.getElementById("ngayOt").value = "";
+        document.getElementById("gioOt").value = "2";
+        document.getElementById("loaiOt").value = "1.5";
+        document.getElementById("ghichu").value = "";
+    }
+
+    function deleteOtRow(index) {
+        otRows.splice(index, 1);
+        renderOtTable();
+        renderSummaryTable();
+    }
+
+    function renderOtTable() {
+        otTableBody.innerHTML = "";
+        otRows.forEach((row, index) => {
+            const emp = employees[row.code];
+            const hourlyRate = getHourlyRate(emp);
+            const otAmount = row.hours * hourlyRate * row.factor;
+
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td>${index + 1}</td>
+                <td class="text-left">${row.code}</td>
+                <td class="text-left">${row.name}</td>
+                <td>${row.date}</td>
+                <td>${row.hours}</td>
+                <td>
+                    <span class="pill">
+                        ${row.factor === 1.5 ? "Ngày thường 150%" :
+                           row.factor === 2 ? "Cuối tuần 200%" : "Lễ/Tết 300%"}
+                    </span>
+                </td>
+                <td class="text-right">${formatCurrency(Math.round(hourlyRate))}</td>
+                <td class="text-right">${formatCurrency(Math.round(otAmount))}</td>
+                <td class="text-left">${row.note || ""}</td>
+                <td>
+                    <button class="btn btn-danger" type="button" onclick="deleteOtRow(${index})">
+                        Xóa
+                    </button>
+                </td>
+            `;
+            otTableBody.appendChild(tr);
+        });
+    }
+
+    function renderSummaryTable() {
+        summaryTableBody.innerHTML = "";
+        const summary = {};
+
+        // Gom OT theo nhân viên, tính dựa trên config hiện tại
+        otRows.forEach(row => {
+            const emp = employees[row.code];
+            const hourlyRate = getHourlyRate(emp);
+            const otAmount = row.hours * hourlyRate * row.factor;
+
+            if (!summary[row.code]) {
+                summary[row.code] = {
+                    code: row.code,
+                    name: row.name,
+                    totalHours: 0,
+                    totalAmount: 0
+                };
+            }
+            summary[row.code].totalHours += row.hours;
+            summary[row.code].totalAmount += otAmount;
+        });
+
+        const list = Object.values(summary);
+        list.forEach((item, idx) => {
+            const emp = employees[item.code];
+            const baseSalary = emp ? emp.baseSalary : 0;
+            const gross = baseSalary + item.totalAmount;
+            const bh = gross * config.deductionRate;
+            const net = gross - bh;
+
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td>${idx + 1}</td>
+                <td class="text-left">${item.code}</td>
+                <td class="text-left">${item.name}</td>
+                <td class="text-right">${formatCurrency(baseSalary)}</td>
+                <td class="text-right">${item.totalHours}</td>
+                <td class="text-right">${formatCurrency(Math.round(item.totalAmount))}</td>
+                <td class="text-right">${formatCurrency(Math.round(gross))}</td>
+                <td class="text-right">${(config.deductionRate * 100).toFixed(1)}%</td>
+                <td class="text-right">${formatCurrency(Math.round(net))}</td>
+            `;
+            summaryTableBody.appendChild(tr);
+        });
+    }
+</script>
+
+</body>
+</html>
