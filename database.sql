@@ -10,7 +10,7 @@ USE hrms_demo;
 DROP TABLE IF EXISTS overtime;
 DROP TABLE IF EXISTS attendance;
 DROP TABLE IF EXISTS employees;
-DROP TABLE IF EXISTS departments;
+DROP TABLE IF EXISTS departments; 
 
 -- =========================================
 -- 3. BẢNG PHÒNG BAN
