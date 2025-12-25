@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Bảng công - Chấm công (Calendar + Chi tiết)</title>
+  <style>
+    :root{
+      --brand: blue;
+      --brand-2:#3399ff;
+      --bg:#3399ff;
+      --text:#1f2937;
+      --muted:#6b7280;
+      --line:#e5e7eb;
+      --card:#ffffff;
+      --warning:#f59e0b;
+      --danger:#ef4444;
+      --info:#2563eb;
+      --shadow: 0 8px 24px rgba(0,0,0,.08);
+    }
+
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Arial, Helvetica, sans-serif;background:var(--bg);color:var(--text)}
+    a{color:inherit;text-decoration:none}
+
+    .topbar{
+      height:56px;background:linear-gradient(90deg,var(--brand-2),var(--brand));
+      color:#fff;display:flex;align-items:center;justify-content:space-between;
+      padding:0 18px; position:sticky; top:0; z-index:10;
+      box-shadow: 0 2px 10px rgba(0,0,0,.12);
+    }
+    .brand{display:flex;align-items:center;gap:10px;font-weight:700;}
+    .brand-badge{
+      width:34px;height:34px;border-radius:8px;background:#fff;color:var(--brand-2);
+      display:flex;align-items:center;justify-content:center;font-weight:900;
+    }
+    .topbar-right{display:flex;align-items:center;gap:10px;font-size:13px;}
+    .pill{
+      background:rgba(255,255,255,.16);
+      border:1px solid rgba(255,255,255,.25);
+      padding:6px 10px;border-radius:999px;
+      display:flex;align-items:center;gap:8px;
+    }
+    .avatar{
+      width:24px;height:24px;border-radius:999px;background:#fff;color:var(--brand-2);
+      display:flex;align-items:center;justify-content:center;font-weight:800;
+    }
+    .icon-btn{
+      width:34px;height:34px;border-radius:8px;border:1px solid rgba(255,255,255,.25);
+      background:rgba(255,255,255,.12);color:#fff;cursor:pointer;
+      display:flex;align-items:center;justify-content:center;
+    }
+
+    .shell{display:flex;min-height:calc(100vh - 56px)}
+    .sidebar{
+      width:260px;background:#fff;border-right:1px solid var(--line);
+      padding:14px 10px; position:sticky; top:56px; height:calc(100vh - 56px); overflow:auto;
+    }
+    .sidebar .sec-title{
+      font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;
+      padding:8px 10px;
+    }
+    .nav{display:flex;flex-direction:column;gap:4px;margin:0;padding:0;list-style:none;}
+    .nav a{
+      display:flex;align-items:center;gap:10px;
+      padding:10px 12px;border-radius:10px;color:#111827;font-size:14px;
+    }
+    .nav a:hover{background:#f8fafc}
+    .nav a.active{background:rgba(10,160,79,.12); color:var(--brand-2); font-weight:700; border:1px solid rgba(10,160,79,.18)}
+    .nav .dot{width:8px;height:8px;border-radius:999px;background:#cbd5e1}
+    .nav a.active .dot{background:var(--brand)}
+
+    .main{flex:1;padding:18px 18px 28px}
+    .page-head{
+      display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+      margin-bottom:12px;
+    }
+    .page-title{display:flex;align-items:center;gap:10px}
+    .page-title h1{font-size:18px;margin:0}
+    .subtabs{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+    .subtab{
+      border:1px solid var(--line);background:#fff;color:#111827;
+      padding:8px 12px;border-radius:999px;font-size:13px;cursor:pointer;
+    }
+    .subtab.active{border-color:rgba(10,160,79,.35); background:rgba(10,160,79,.10); color:var(--brand-2); font-weight:700}
+    .actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    .btn{
+      border:1px solid var(--line);background:#fff;color:#111827;
+      padding:9px 12px;border-radius:10px;font-size:13px;cursor:pointer;
+      display:inline-flex;align-items:center;gap:8px;
+    }
+    .btn.primary{background:var(--brand);border-color:var(--brand);color:#fff}
+    .btn.primary:hover{background:var(--brand-2)}
+    .btn.warn{background:#fff;border-color:rgba(245,158,11,.35);color:#b45309}
+    .btn.info{background:#fff;border-color:rgba(37,99,235,.35);color:#1d4ed8}
+    .btn.outline{background:#fff;border-color:rgba(10,160,79,.35);color:var(--brand-2)}
+    .btn:active{transform:translateY(1px)}
+
+    .card{
+      background:var(--card);border:1px solid var(--line);border-radius:14px;
+      box-shadow: var(--shadow);
+    }
+
+    .filters{
+      display:flex;gap:10px;align-items:center;flex-wrap:wrap;
+      padding:14px;margin-bottom:12px;
+    }
+    .field{display:flex;flex-direction:column;gap:6px;min-width:260px;flex:1}
+    .field label{font-size:12px;color:var(--muted)}
+    .field input{
+      height:38px;border:1px solid var(--line);border-radius:10px;padding:0 12px;font-size:13px;
+      background:#fff;
+    }
+    .filters .btn{height:38px;border-radius:10px}
+
+    .calendar-wrap{padding:14px}
+    .calendar-meta{
+      display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;
+      padding:0 2px 10px 2px;
+    }
+    .meta-right{font-size:12px;color:var(--muted);text-align:right;line-height:1.6;}
+    .calendar{
+      border:1px solid var(--line);
+      border-radius:12px; overflow:hidden;
+      background:#fff;
+    }
+    .dow{
+      display:grid;grid-template-columns:repeat(7,1fr);
+      background:#f8fafc;border-bottom:1px solid var(--line);
+      font-weight:700;color:#374151;font-size:13px;
+    }
+    .dow div{padding:10px 10px;text-align:center}
+    .grid{display:grid;grid-template-columns:repeat(7,1fr);}
+    .cell{
+      min-height:120px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);
+      padding:10px 10px 8px 10px; position:relative;
+    }
+    .cell:nth-child(7n){border-right:none}
+    .cell.muted{background:#fafafa;color:#9ca3af}
+    .cell .daynum{
+      font-weight:700;font-size:14px;color:#111827;
+      display:flex;align-items:center;gap:8px;
+    }
+    .chip-today{
+      font-size:11px;padding:2px 8px;border-radius:999px;
+      background:rgba(37,99,235,.12);border:1px solid rgba(37,99,235,.20);color:#1d4ed8;
+    }
+    .shift{margin-top:8px;display:flex;align-items:center;gap:6px;font-size:12px;color:#111827;}
+    .sun{width:12px;height:12px;border-radius:999px;background:rgba(245,158,11,.18);border:1px solid rgba(245,158,11,.35)}
+    .times{margin-top:8px;font-size:12px;color:#111827;display:flex;gap:14px;flex-wrap:wrap}
+    .t-label{color:var(--muted)}
+    .t-val{font-weight:700}
+    .t-val.miss{color:var(--danger)}
+    .status{margin-top:8px;font-size:12px;display:flex;align-items:center;gap:6px;color:var(--muted)}
+    .status .badge{font-size:11px;padding:2px 8px;border-radius:999px;border:1px solid var(--line);background:#fff;}
+    .badge.ok{border-color:rgba(22,163,74,.25);background:rgba(22,163,74,.10);color:#166534}
+    .badge.warn{border-color:rgba(245,158,11,.35);background:rgba(245,158,11,.12);color:#92400e}
+    .badge.info{border-color:rgba(37,99,235,.35);background:rgba(37,99,235,.10);color:#1d4ed8}
+    .cell:hover{background:#f7fbf8}
+    .cell.selected{outline:3px solid rgba(10,160,79,.25); outline-offset:-3px; background:#f6fff9}
+
+    .detail{margin-top:12px;padding:14px;}
+    .detail-head{
+      display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap;
+      border-bottom:1px solid var(--line);padding-bottom:10px;margin-bottom:12px;
+    }
+    .detail-head h2{margin:0;font-size:15px}
+    .detail-sub{font-size:12px;color:var(--muted);margin-top:4px}
+    .kv{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:#111827}
+    .kv span{color:var(--muted)}
+    .mini-actions{display:flex;gap:8px;flex-wrap:wrap}
+
+    .stats{
+      display:grid;grid-template-columns:repeat(5,minmax(0,1fr));
+      gap:10px;padding:14px;
+    }
+    .stat{
+      border:1px solid var(--line);border-radius:12px;background:#fff;
+      padding:12px;text-align:center;
+    }
+    .stat .label{font-size:12px;color:var(--muted)}
+    .stat .value{margin-top:6px;font-size:22px;font-weight:800}
+    .stat.green{border-color:rgba(10,160,79,.25)}
+    .stat.blue{border-color:rgba(37,99,235,.25)}
+    .stat.orange{border-color:rgba(245,158,11,.35)}
+    .stat.purple{border-color:rgba(124,58,237,.25)}
+    .stat.red{border-color:rgba(239,68,68,.25)}
+    .stat.green .value{color:var(--brand-2)}
+    .stat.blue .value{color:#1d4ed8}
+    .stat.orange .value{color:#b45309}
+    .stat.purple .value{color:#6d28d9}
+    .stat.red .value{color:#b91c1c}
+
+    .split{display:grid;grid-template-columns:1.15fr .85fr;gap:12px;padding:0 14px 14px;}
+    .box{border:1px solid var(--line);border-radius:12px;background:#fff;overflow:hidden;}
+    .box-head{
+      background:#f8fafc;border-bottom:1px solid var(--line);
+      padding:10px 12px;font-weight:800;font-size:13px;color:#111827;
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+    }
+    .table{width:100%;border-collapse:collapse;font-size:13px;}
+    .table th,.table td{border-bottom:1px solid var(--line);padding:10px 10px;text-align:center;vertical-align:middle;}
+    .table th{background:#f8fafc;color:#374151;font-size:12px;text-transform:uppercase;letter-spacing:.4px}
+    .table td.left, .table th.left{text-align:left}
+    .table tr:hover td{background:#f6fff9}
+    .hint{font-size:12px;color:var(--muted);padding:0 14px 14px}
+    .radios{display:flex;gap:16px;align-items:center;font-size:13px;color:#111827}
+    .radios input{transform:translateY(1px)}
+
+    @media (max-width: 1100px){
+      .sidebar{display:none}
+      .shell{display:block}
+      .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .split{grid-template-columns:1fr}
+      .cell{min-height:110px}
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-badge">NS</div>
+      <div>ABC <span style="opacity:.8;font-weight:600">| NHÂN SỰ</span></div>
+    </div>
+    <div class="topbar-right">
+      <div class="pill" title="Trợ giúp">❓</div>
+      <div class="pill">
+        <div class="avatar">N</div>
+        <div style="font-weight:700">Nguyễn Việt Thắng</div>
+      </div>
+      <button class="icon-btn" title="Ứng dụng">▦</button>
+    </div>
+  </header>
+
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="sec-title">Đề xuất</div>
+      <ul class="nav">
+        <li><a href="#"><span class="dot"></span>Nghỉ phép</a></li>
+        <li><a href="#"><span class="dot"></span>Làm thêm giờ (OT)</a></li>
+        <li><a href="#"><span class="dot"></span>Giải trình công</a></li>
+      </ul>
+
+      <div class="sec-title" style="margin-top:10px">Chấm công</div>
+      <ul class="nav">
+        <li><a class="active" href="#"><span class="dot"></span>Bảng công</a></li>
+        <li><a href="#"><span class="dot"></span>Phép năm</a></li>
+      </ul>
+    </aside>
+
+    <main class="main">
+      <div class="page-head">
+        <div class="page-title">
+          <div style="width:32px;height:32px;border-radius:10px;background:#fff;border:1px solid var(--line);display:flex;align-items:center;justify-content:center">🗓️</div>
+          <div>
+            <h1>Bảng công</h1>
+            <div style="font-size:12px;color:var(--card);margin-top:2px">Xem lịch chấm công theo ngày và bảng công chi tiết</div>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button class="btn outline" id="btnOT">Đăng ký OT</button>
+          <button class="btn outline" id="btnLeave">Đăng ký nghỉ</button>
+          <button class="btn outline" id="btnExplain">Giải trình công</button>
+        </div>
+      </div>
+
+      <div class="card filters">
+        <div class="field">
+          <label>Kỳ công</label>
+          <input id="periodInput" type="text" value="01/2026 (23/12 - 22/01)" />
+        </div>
+        <button class="btn primary" id="btnSearch">🔎 Tìm kiếm</button>
+
+        <div class="subtabs" style="margin-left:auto">
+          <button class="subtab active" data-view="calendar">Chấm công</button>
+          <button class="subtab" data-view="detail">Bảng công</button>
+        </div>
+      </div>
+
+      <section id="view-calendar" class="card calendar-wrap">
+        <div class="calendar-meta">
+          <div style="font-size:13px;color:#111827;font-weight:800">Lịch chấm công</div>
+          <div class="meta-right">
+            <div><b>Dữ liệu được cập nhật lúc:</b> <span id="lastUpdated">12:15 - 25/12/2025</span></div>
+            <div><b>Lần cập nhật tiếp theo lúc:</b> <span id="nextUpdated">14:35 - 25/12/2025</span></div>
+          </div>
+        </div>
+
+        <div class="calendar">
+          <div class="dow">
+            <div>Thứ 2</div><div>Thứ 3</div><div>Thứ 4</div><div>Thứ 5</div><div>Thứ 6</div><div>Thứ 7</div><div>Chủ nhật</div>
+          </div>
+          <div class="grid" id="calendarGrid"></div>
+        </div>
+
+        <div class="detail card" style="box-shadow:none;border-radius:12px;margin-top:12px">
+          <div class="detail-head">
+            <div>
+              <h2>Chi tiết ngày: <span id="detailDate">—</span></h2>
+              <div class="detail-sub" id="detailShift">Chọn 1 ô ngày trong lịch để xem chi tiết</div>
+            </div>
+            <div class="mini-actions">
+              <button class="btn warn" id="btnExplainDay">📝 Giải trình ngày</button>
+              <button class="btn info" id="btnRegOTDay">⏱️ ĐK OT ngày</button>
+            </div>
+          </div>
+
+          <div class="kv" explain id="detailKV">
+            <div><b>Vào:</b> <span>—</span></div>
+            <div><b>Ra:</b> <span>—</span></div>
+            <div><b>Trạng thái:</b> <span>—</span></div>
+            <div><b>Ghi chú:</b> <span>—</span></div>
+          </div>
+        </div>
+
+        <div class="hint">
+          Nhớ phải chấm công đầy đủ bạn nhé ^_^
+        </div>
+      </section>
+
+      <section id="view-detail" class="card" style="display:none">
+        <div class="stats">
+          <div class="stat green">
+            <div class="label">Tổng công</div>
+            <div class="value" id="sumTotalWork">2,237</div>
+          </div>
+          <div class="stat blue">
+            <div class="label">Công chuẩn</div>
+            <div class="value" id="sumStandardWork">27,25</div>
+          </div>
+          <div class="stat orange">
+            <div class="label">Công tồn</div>
+            <div class="value" id="sumRemainWork">--</div>
+          </div>
+          <div class="stat purple">
+            <div class="label">Phép khả dụng</div>
+            <div class="value" id="sumLeaveAvailable">0</div>
+          </div>
+          <div class="stat red">
+            <div class="label">Phép đã dùng</div>
+            <div class="value" id="sumLeaveUsed">0</div>
+          </div>
+        </div>
+
+        <div class="split">
+          <div class="box">
+            <div class="box-head">
+              <span>Chế độ</span>
+              <span style="font-size:12px;color:var(--muted);font-weight:600">Tổng hợp theo nhóm</span>
+            </div>
+            <div class="box-body">
+              <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px">
+                <div style="border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center">
+                  <div style="font-size:12px;color:var(--muted)">Chế độ khác</div>
+                  <div style="margin-top:6px;font-weight:800">-</div>
+                </div>
+                <div style="border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center">
+                  <div style="font-size:12px;color:var(--muted)">Công trường tựa trực Viện</div>
+                  <div style="margin-top:6px;font-weight:800">-</div>
+                </div>
+                <div style="border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center">
+                  <div style="font-size:12px;color:var(--muted)">Công trường tựa trực Khoa/Phòng</div>
+                  <div style="margin-top:6px;font-weight:800">-</div>
+                </div>
+                <div style="border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center">
+                  <div style="font-size:12px;color:var(--muted)">Công hưởng BHXH</div>
+                  <div style="margin-top:6px;font-weight:800">-</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="box">
+            <div class="box-head">
+              <span>Công (đvt: công)</span>
+              <span style="font-size:12px;color:var(--muted);font-weight:600">OT theo hệ số</span>
+            </div>
+            <div style="padding:0">
+              <table class="table" style="margin:0">
+                <thead>
+                  <tr>
+                    <th>100%</th>
+                    <th>Làm thêm 100%</th>
+                    <th>Làm thêm 150%</th>
+                    <th>Làm thêm 200%</th>
+                    <th>Làm thêm 300%</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td id="sum100">2,237</td>
+                    <td id="sumOT100">-</td>
+                    <td id="sumOT150">-</td>
+                    <td id="sumOT200">-</td>
+                    <td id="sumOT300">-</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="box" style="margin:0 14px 14px">
+          <div class="box-head">
+            <div class="radios">
+              <label><input type="radio" name="viewMode" checked> Xem bảng công tổng hợp</label>
+              <label><input type="radio" name="viewMode"> Xem bảng công chi tiết</label>
+            </div>
+            <div style="font-size:12px;color:var(--muted);font-weight:600">Dữ liệu demo — map theo API của bạn</div>
+          </div>
+
+          <div style="padding:0">
+            <table class="table" id="detailTable">
+              <thead>
+                <tr>
+                  <th class="left" style="width:120px">Thời gian</th>
+                  <th>Làm thêm - OT (giờ)</th>
+                  <th>Trực (công)</th>
+                  <th>Trực ca 3 (giờ)</th>
+                  <th>Nghỉ hưởng BHXH (công)</th>
+                  <th>Nghỉ hưởng lương (công)</th>
+                  <th>Nghỉ không lương (công)</th>
+                  <th>Nghỉ phép (giờ)</th>
+                  <th>Công chuyên cần (giờ)</th>
+                  <th class="left">Ghi chú</th>
+                </tr>
+              </thead>
+              <tbody id="detailTbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+<script>
+  const periodStart = new Date(2025, 11, 23);
+  const periodEnd   = new Date(2026,  0, 22);
+
+  const attendanceData = {
+    "2025-12-23": { shift:"Ca làm", shiftTime:"08:00 - 18:00", in:"08:06", out:"18:11", status:"Đã giải trình công", statusType:"ok", note:"" },
+    "2025-12-24": { shift:"Ca làm", shiftTime:"08:00 - 18:00", in:"07:56", out:"18:04", status:"", statusType:"", note:"" },
+    "2025-12-25": { shift:"Ca làm", shiftTime:"08:00 - 18:00", in:"07:57", out:"--:--", status:"Chưa giải trình công", statusType:"warn", note:"Thiếu giờ ra" },
+    "2025-12-26": { shift:"Ca làm", shiftTime:"08:00 - 18:00", in:"07:00", out:"18:00", status:"", statusType:"", note:"Chưa có dữ liệu" },
+    "2025-12-27": { shift:"Ca làm", shiftTime:"08:00 - 18:00", in:"07:35", out:"18:04", status:"", statusType:"", note:"" },
+    "2025-12-29": { shift:"Ca làm", shiftTime:"08:00 - 18:00", in:"08:30", out:"18:15", status:"Chưa giải trình công", statusType:"warn", note:"Thiếu giờ công  " },
+    "2025-12-30": { shift:"Ca làm", shiftTime:"08:00 - 18:00", in:"--:--", out:"--:--", status:"", statusType:"", note:"" },
+    "2025-12-31": { shift:"Ca làm", shiftTime:"08:00 - 18:00", in:"--:--", out:"--:--", status:"", statusType:"", note:"" },
+    "2026-01-01": { shift:"Ca làm", shiftTime:"08:00 - 18:00", in:"--:--", out:"--:--", status:"", statusType:"", note:"" },
+    "2026-01-02": { shift:"Ca làm", shiftTime:"08:00 - 18:00", in:"--:--", out:"--:--", status:"", statusType:"", note:"" },
+    "2026-01-03": { shift:"Ca làm", shiftTime:"08:00 - 15:00", in:"--:--", out:"--:--", status:"", statusType:"", note:"" },
+    "2026-01-05": { shift:"Ca làm", shiftTime:"08:00 - 18:00", in:"--:--", out:"--:--", status:"", statusType:"", note:"" },
+    "2026-01-06": { shift:"Ca làm", shiftTime:"08:00 - 18:00", in:"--:--", out:"--:--", status:"", statusType:"", note:"" },
+    "2026-01-07": { shift:"Ca làm", shiftTime:"08:00 - 18:00", in:"--:--", out:"--:--", status:"", statusType:"", note:"" },
+    "2026-01-08": { shift:"Ca làm", shiftTime:"08:00 - 18:00", in:"--:--", out:"--:--", status:"", statusType:"", note:"" },
+    "2026-01-09": { shift:"Ca làm", shiftTime:"08:00 - 18:00", in:"--:--", out:"--:--", status:"", statusType:"", note:"" },
+    "2026-01-10": { shift:"Ca làm", shiftTime:"08:00 - 15:00", in:"--:--", out:"--:--", status:"", statusType:"", note:"" },
+    "2026-01-12": { shift:"Ca làm", shiftTime:"08:00 - 18:00", in:"--:--", out:"--:--", status:"", statusType:"", note:"" },
+    "2026-01-13": { shift:"Ca làm", shiftTime:"08:00 - 18:00", in:"--:--", out:"--:--", status:"", statusType:"", note:"" },
+    "2026-01-14": { shift:"Ca làm", shiftTime:"08:00 - 18:00", in:"--:--", out:"--:--", status:"", statusType:"", note:"" },
+    "2026-01-15": { shift:"Ca làm", shiftTime:"08:00 - 18:00", in:"--:--", out:"--:--", status:"", statusType:"", note:"" },
+    "2026-01-16": { shift:"Ca làm", shiftTime:"08:00 - 18:00", in:"--:--", out:"--:--", status:"", statusType:"", note:"" },
+    "2026-01-17": { shift:"Ca làm", shiftTime:"08:00 - 15:00", in:"--:--", out:"--:--", status:"", statusType:"", note:"" }
+  };
+
+  const detailRows = [
+    { label:"Tổng", ot:"-", duty:"-", duty3:"-", bhxh:"-", paid:"-", unpaid:"-", leave:"-", diligence:"17,9", note:"" },
+    { label:"T3 - 23", ot:"-", duty:"-", duty3:"-", bhxh:"-", paid:"-", unpaid:"-", leave:"-", diligence:"8,9", note:"" },
+    { label:"T4 - 24", ot:"-", duty:"-", duty3:"-", bhxh:"-", paid:"-", unpaid:"-", leave:"-", diligence:"9", note:"" },
+    { label:"T5 - 25", ot:"-", duty:"-", duty3:"-", bhxh:"-", paid:"-", unpaid:"-", leave:"-", diligence:"-", note:"Thiếu giờ ra" },
+    { label:"T6 - 26", ot:"-", duty:"-", duty3:"-", bhxh:"-", paid:"-", unpaid:"-", leave:"-", diligence:"-", note:"" },
+    { label:"T7 - 27", ot:"-", duty:"-", duty3:"-", bhxh:"-", paid:"-", unpaid:"-", leave:"-", diligence:"-", note:"" },
+    { label:"CN - 28", ot:"-", duty:"-", duty3:"-", bhxh:"-", paid:"-", unpaid:"-", leave:"-", diligence:"-", note:"" },
+    { label:"T2 - 29", ot:"-", duty:"-", duty3:"-", bhxh:"-", paid:"-", unpaid:"-", leave:"-", diligence:"-", note:"" }
+  ];
+
+  const pad2 = (n) => String(n).padStart(2,'0');
+  const ymd = (d) => `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
+  const sameDay = (a,b) => a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate();
+  const formatVN = (d) => `${pad2(d.getDate())}/${pad2(d.getMonth()+1)}/${d.getFullYear()}`;
+  const weekdayVN = (d) => d.getDay()===0 ? "Chủ nhật" : `Thứ ${d.getDay()+1}`;
+
+  function startOfWeekMon(date){
+    const d = new Date(date);
+    const day = d.getDay();
+    const diff = (day===0 ? -6 : 1-day);
+    d.setDate(d.getDate()+diff);
+    d.setHours(0,0,0,0);
+    return d;
+  }
+  function endOfWeekSun(date){
+    const d = startOfWeekMon(date);
+    d.setDate(d.getDate()+6);
+    return d;
+  }
+
+  const gridEl = document.getElementById('calendarGrid');
+  const detailDateEl = document.getElementById('detailDate');
+  const detailShiftEl = document.getElementById('detailShift');
+  const detailKV = document.getElementById('detailKV');
+  let selectedKey = null;
+
+  function renderCalendar(){
+    gridEl.innerHTML = "";
+    const today = new Date();
+    const start = startOfWeekMon(periodStart);
+    const end = endOfWeekSun(periodEnd);
+
+    const cursor = new Date(start);
+    cursor.setHours(0,0,0,0);
+
+    while(cursor <= end){
+      const key = ymd(cursor);
+      const inPeriod = cursor >= periodStart && cursor <= periodEnd;
+
+      const cell = document.createElement('div');
+      cell.className = "cell" + (inPeriod ? "" : " muted");
+      cell.dataset.key = key;
+
+      const top = document.createElement('div');
+      top.className = "daynum";
+      top.innerHTML = `<span>${cursor.getDate()}</span>` + (sameDay(cursor, today) ? `<span class="chip-today">Hôm nay</span>` : ``);
+      cell.appendChild(top);
+
+      if(inPeriod){
+        const data = attendanceData[key];
+        if(data){
+          const shift = document.createElement('div');
+          shift.className = "shift";
+          shift.innerHTML = `<span class="sun"></span><b>${data.shift}</b> (${data.shiftTime})`;
+          cell.appendChild(shift);
+
+          const times = document.createElement('div');
+          times.className = "times";
+          const inMiss = (data.in||"").includes("--");
+          const outMiss = (data.out||"").includes("--");
+          times.innerHTML = `
+            <div><span class="t-label">Vào:</span> <span class="t-val ${inMiss?'miss':''}">${data.in}</span></div>
+            <div><span class="t-label">Ra:</span> <span class="t-val ${outMiss?'miss':''}">${data.out}</span></div>
+          `;
+          cell.appendChild(times);
+
+          if(data.status){
+            const st = document.createElement('div');
+            st.className = "status";
+            const cls = data.statusType || "info";
+            st.innerHTML = `<span class="badge ${cls}">${data.status}</span>`;
+            cell.appendChild(st);
+          }
+        }
+      }
+
+      cell.addEventListener('click', () => { if(inPeriod) selectDay(key); });
+      gridEl.appendChild(cell);
+      cursor.setDate(cursor.getDate()+1);
+    }
+
+    const firstKey = Object.keys(attendanceData)[0] || ymd(periodStart);
+    selectDay(firstKey);
+  }
+
+  function selectDay(key){
+    selectedKey = key;
+    document.querySelectorAll('.cell').forEach(c => c.classList.toggle('selected', c.dataset.key===key));
+
+    const [yy,mm,dd] = key.split('-').map(Number);
+    const d = new Date(yy, mm-1, dd);
+    detailDateEl.textContent = `${weekdayVN(d)} - ${formatVN(d)}`;
+
+    const data = attendanceData[key];
+    if(!data){
+      detailShiftEl.textContent = "Không có dữ liệu chấm công";
+      detailKV.innerHTML = `
+        <div><b>Vào:</b> <span>—</span></div>
+        <div><b>Ra:</b> <span>—</span></div>
+        <div><b>Trạng thái:</b> <span>—</span></div>
+        <div><b>Ghi chú:</b> <span>—</span></div>
+      `;
+      return;
+    }
+    detailShiftEl.textContent = `${data.shift} (${data.shiftTime})`;
+    detailKV.innerHTML = `
+      <div><b>Vào:</b> <span>${data.in}</span></div>
+      <div><b>Ra:</b> <span>${data.out}</span></div>
+      <div><b>Trạng thái:</b> <span>${data.status || "—"}</span></div>
+      <div><b>Ghi chú:</b> <span>${data.note || "—"}</span></div>
+    `;
+  }
+
+  const tabs = document.querySelectorAll('.subtab');
+  const viewCalendar = document.getElementById('view-calendar');
+  const viewDetail = document.getElementById('view-detail');
+  tabs.forEach(t => t.addEventListener('click', () => {
+    tabs.forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    const v = t.dataset.view;
+    viewCalendar.style.display = (v==="calendar") ? "" : "none";
+    viewDetail.style.display = (v==="detail") ? "" : "none";
+  }));
+
+  const tb = document.getElementById('detailTbody');
+  function renderDetailTable(){
+    tb.innerHTML = "";
+    detailRows.forEach(r => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td class="left"><b>${r.label}</b></td>
+        <td>${r.ot}</td>
+        <td>${r.duty}</td>
+        <td>${r.duty3}</td>
+        <td>${r.bhxh}</td>
+        <td>${r.paid}</td>
+        <td>${r.unpaid}</td>
+        <td>${r.leave}</td>
+        <td style="background: rgba(10,160,79,.10); font-weight:800; color: var(--brand-2)">${r.diligence}</td>
+        <td class="left">${r.note || ""}</td>
+      `;
+      tb.appendChild(tr);
+    });
+  }
+
+  document.getElementById('btnSearch').addEventListener('click', () => {
+    alert("");
+  });
+  document.getElementById('btnOT').addEventListener('click', ()=> alert("T.T"));
+  document.getElementById('btnLeave').addEventListener('click', ()=> alert("T.T"));
+  document.getElementById('btnExplain').addEventListener('click', ()=> alert("T.T"));
+  document.getElementById('btnExplainDay').addEventListener('click', ()=> alert("T.T " + (selectedKey||"")));
+  document.getElementById('btnRegOTDay').addEventListener('click', ()=> alert("T.T" + (selectedKey||"")));
+
+  renderCalendar();
+  renderDetailTable();
+</script>
+</body>
+</html>
